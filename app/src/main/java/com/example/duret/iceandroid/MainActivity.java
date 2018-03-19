@@ -16,11 +16,10 @@ import java.io.IOException;
 import server.*;
 
 public class MainActivity extends AppCompatActivity {
-    private Button bonsouar;
-    private TextView hw;
     private SearchView searchView;
     private ListView playlist;
-    private ImageButton previousButton, playButton, nextButton;
+    private ImageButton recordButton, stopButton;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,17 +28,18 @@ public class MainActivity extends AppCompatActivity {
 
         searchView = findViewById(R.id.searchView);
         playlist = findViewById(R.id.list);
-        previousButton = findViewById(R.id.previousButton);
-        playButton = findViewById(R.id.playButton);
-        nextButton = findViewById(R.id.nextButton);
+        recordButton = findViewById(R.id.recordButton);
+        stopButton = findViewById(R.id.stopButton);
 
         IServerPrx ice = SharedIce.getInstance();
 
-        playButton.setOnClickListener(new View.OnClickListener() {
+        recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                recordButton.setVisibility(View.INVISIBLE);
+                stopButton.setVisibility(View.VISIBLE);
                 ice.playMusic(0);
-                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer = new MediaPlayer();
                 try {
                     mediaPlayer.setDataSource(SharedIce.URL);
                     mediaPlayer.prepare();
@@ -47,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopButton.setVisibility(View.INVISIBLE);
+                recordButton.setVisibility(View.VISIBLE);
+                ice.stopMusic();
+                mediaPlayer.stop();
+                mediaPlayer.release();
             }
         });
 
