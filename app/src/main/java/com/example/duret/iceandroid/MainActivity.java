@@ -61,29 +61,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*bonsouar = findViewById(R.id.bonsouar);
-        hw = findViewById(R.id.hw);
 
-        bonsouar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hw.setText("Bonsouar");
-                try {
-                    System.out.println(ice.getPlaylist()[0].name);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-
-                ice.playMusic(0);
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                try {
-                    mediaPlayer.setDataSource(SharedIce.URL);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });*/
     }
 }
