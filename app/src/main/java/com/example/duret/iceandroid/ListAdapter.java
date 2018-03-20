@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -32,33 +34,37 @@ public class ListAdapter extends ArrayAdapter<Music> {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         row = inflater.inflate(layoutResourceId, parent, false);
 
-        /*holder = new MusicHolder();
-        holder.speaker = items.get(position);
+        holder = new MusicHolder();
+        holder.music = items.get(position);
 
-        holder.update = row.findViewById(R.id.update_button);
-        holder.update.setTag(holder.speaker);
-        holder.test = row.findViewById(R.id.test_button);
-        if (holder.speaker.getName().isEmpty())
-            holder.test.setEnabled(false);
-        else
-            holder.test.setEnabled(true);
-        holder.test.setTag(holder.speaker);
-        holder.remove = row.findViewById(R.id.remove_button);
-        holder.remove.setTag(holder.speaker);
-
-        holder.name = row.findViewById(R.id.speaker_name);
+        holder.musicName = row.findViewById(R.id.music_name);
+        holder.musicName.setTag(holder.music);
+        holder.musicArtist = row.findViewById(R.id.music_artist);
+        holder.musicArtist.setTag(holder.music);
+        holder.musicAlbum = row.findViewById(R.id.music_album);
+        holder.musicAlbum.setTag(holder.music);
+        holder.playButton = row.findViewById(R.id.playButton);
+        holder.playButton.setTag(R.id.musicRef, holder.music);
+        holder.playButton.setTag(R.id.buttonRef, holder.playButton);
+        holder.playButton.setTag(R.id.playRef, true);
 
         row.setTag(holder);
 
-        setupItem(holder);*/
+        setupItem(holder);
         return row;
     }
 
     private void setupItem(MusicHolder holder) {
-        //holder.name.setText(holder.speaker.getName());
+        holder.musicName.setText(holder.music.name);
+        holder.musicArtist.setText(holder.music.artist);
+        holder.musicAlbum.setText(holder.music.album);
     }
 
     public static class MusicHolder {
         Music music;
+        TextView musicName;
+        TextView musicArtist;
+        TextView musicAlbum;
+        ImageButton playButton;
     }
 }
