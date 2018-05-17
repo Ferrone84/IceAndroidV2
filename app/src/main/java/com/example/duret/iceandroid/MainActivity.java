@@ -1,9 +1,15 @@
 package com.example.duret.iceandroid;
 
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,14 +27,20 @@ import java.util.Vector;
 
 import server.*;
 
+import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class MainActivity extends AppCompatActivity {
+
+    private AudioRecord recorder = null;
     private SearchView searchView;
     private ListView list;
     private ListAdapter adapter;
     private ImageButton recordButton, stopButton;
-    MediaPlayer mediaPlayer;
-    Music[] playlist;
-    IServerPrx ice;
+    private MediaPlayer mediaPlayer;
+    private Music[] playlist;
+    private IServerPrx ice;
+    private String recordResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 recordButton.setVisibility(View.INVISIBLE);
                 stopButton.setVisibility(View.VISIBLE);
+
+                if (checkPermission()) {
+                    recordAudio();
+                }
+                else {
+                    requestPermission();
+                }
             }
         });
 
@@ -60,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 stopButton.setVisibility(View.INVISIBLE);
                 recordButton.setVisibility(View.VISIBLE);
+                stopRecord();
             }
         });
 
@@ -76,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
 
-                Log.e("", "EEEEEE: "+s );
-
                 Music[] names = ice.findByName(s);
                 Music[] artists = ice.findByArtist(s);
                 Music[] albums = ice.findByAlbum(s);
@@ -87,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     for (Music music : names)
                         searchResult.add(music);
                 }
-                Log.e("", "onQueryTextChange1: "+searchResult);
+
                 if (artists.length != 0) {
                     for (Music music : artists) {
                         boolean find = false;
@@ -102,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                Log.e("", "onQueryTextChange2: "+searchResult);
+
                 if (albums.length != 0) {
                     for (Music music : albums) {
                         boolean find = false;
@@ -117,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                Log.e("", "onQueryTextChange3: "+searchResult);
 
                 Music[] result = new Music[searchResult.size()];
                 for (int i=0; i < searchResult.size(); i++)
@@ -128,6 +146,42 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    public void recordAudio() {
+        recordResult = "";
+
+
+    }
+
+    public void stopRecord() {
+
+        if (!recordResult.isEmpty()) {
+            launchRequest(recordResult);
+        }
+        else {
+            //afficher un message qui dit que l'audio n'as capturé aucun son
+            makeToast("Votre requête est vide.");
+        }
+    }
+
+    public void launchRequest(String recordResult) {
+        //une fois fini on lance l'analyseur de requetes
+        String[] requestResult = RequestParser.parse(recordResult);
+
+        if (requestResult == null)  {
+            makeToast("Votre requête est invalide.");
+        }
+        if (requestResult[0].equals("Exception")) {
+            //afficher l'erreur -> requestResult[1]
+            makeToast("Exception : "+requestResult[1]);
+        }
+
+        //regarder le résultat et selon l'action on fait un truc
+
+        if (requestResult.equals("action1")) {
+
+        }
     }
 
     public void playAndPauseOnClickHandler(View v) {
@@ -141,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
                 View v2 = list.getChildAt(i);
                 ImageButton tmpButton = v2.findViewById(R.id.playButton);
                 tmpButton.setImageResource(android.R.drawable.ic_media_play);
-                //Log.e("", "playAndPauseOnClickHandler: "+i+ " : " + v2.getTag(R.id.playRef));
                 v2.setTag(R.id.playRef, true);
             }
             button.setImageResource(android.R.drawable.ic_media_pause);
@@ -187,5 +240,19 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+
+    protected void makeToast(String text) {
+        Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean checkPermission() {
+        return ContextCompat.checkSelfPermission(getApplicationContext(),
+                RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    protected void requestPermission() {
+        ActivityCompat.requestPermissions(MainActivity.this, new
+                String[]{RECORD_AUDIO}, 1);
     }
 }
