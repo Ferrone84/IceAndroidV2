@@ -19,7 +19,7 @@ public class RequestParser {
 
     private static List<String> actionsList = Arrays.asList(
             "lancer", "lance",
-            "arreter", "stop",
+            "arrêter", "stop",
             "chercher", "cherche"
     );
 
@@ -43,6 +43,22 @@ public class RequestParser {
                 if (i != requestResults.length -1)
                     target += " ";
             }
+
+            if (action.equals("lancer") || action.equals("lance")) {
+                if (target.contains("la")) {
+                    target = target.replace("la", "");
+                }
+                if (target.contains("musique")) {
+                    target = target.replace("musique", "");
+                }
+            }
+            while (target.contains("  ")) {
+                target = target.replace("  ", " ");
+            }
+            while (target.charAt(0) == ' ') {
+                target = target.substring(1, target.length());
+            }
+
             System.out.print("action(" + action + ") / ");
             System.out.println("target(" + target + ")");
 
@@ -55,13 +71,4 @@ public class RequestParser {
 
         return requestResults;
     }
-
-    //potentiels tests unitaires
-    /*public static void main(String[] args) {
-        RequestParser.parse("lance how you remind me");
-        RequestParser.parse("lance ma musique stp");
-        RequestParser.parse("test ma musique stp");
-        RequestParser.parse("");
-        RequestParser.parse(" ");
-    }*/
 }
