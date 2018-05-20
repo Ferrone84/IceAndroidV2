@@ -8,7 +8,7 @@ import static android.content.ContentValues.TAG;
 public class SharedIce {
     private static IServerPrx serverPrx = null;
     private static final int port = 8090;
-    private static final String ip = "192.168.1.12"; //maison
+    private static final String ip = "192.168.1.32"; //maison
     //private static final String ip = "10.126.1.5";
     //private static final String ip = "10.126.2.160";
     public static final String URL = "http://"+ip+":"+port+"/music.mp3";
